@@ -19,8 +19,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void openFirstFragment(int previousNumber) {
-        final Fragment firstFragment = FirstFragment.newInstance(previousNumber);
+    private void openFirstFragment(int previousResult) {
+        final Fragment firstFragment = FirstFragment.newInstance(previousResult);
         final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.container, firstFragment);
         transaction.commit();

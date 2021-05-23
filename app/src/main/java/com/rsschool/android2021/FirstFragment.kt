@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import java.lang.NumberFormatException
 
 class FirstFragment : Fragment() {
 
@@ -36,30 +37,39 @@ class FirstFragment : Fragment() {
         previousResult?.text = "Previous result: ${result.toString()}"
 
         generateButton?.setOnClickListener {
-            val min = minValue!!.text.toString()
-            val max = maxValue!!.text.toString()
+            try {
+                val min = minValue!!.text.toString()
+                val max = maxValue!!.text.toString()
 
-            if (min.isEmpty() || max.isEmpty()) {
+                if (min.isEmpty() || max.isEmpty()) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please, input numbers",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+
+                if (min.toInt() > max.toInt()) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Please, input correct numbers",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, SecondFragment.newInstance(min.toInt(), max.toInt()))
+                    .commit()
+            } catch (e: NumberFormatException) {
                 Toast.makeText(
                     requireContext(),
-                    "Please, input number",
+                    "Please, input lesser numbers",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
             }
-
-            if (min.toInt() > max.toInt()) {
-                Toast.makeText(
-                    requireContext(),
-                    "Please, input correct numbers",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@setOnClickListener
-            }
-
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, SecondFragment.newInstance(min.toInt(), max.toInt()))
-                .commit()
         }
     }
 
