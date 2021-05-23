@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 
 class SecondFragment : Fragment() {
@@ -29,18 +30,28 @@ class SecondFragment : Fragment() {
         val min = arguments?.getInt(MIN_VALUE_KEY) ?: 0
         val max = arguments?.getInt(MAX_VALUE_KEY) ?: 0
 
-        val random = generate(min, max)
-        result?.text = generate(min, max).toString()
+        val randomNumber = generateRandomNumber(min, max)
+        result?.text = randomNumber.toString()
 
         backButton?.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.container, FirstFragment.newInstance(random)).commit()
-
+                .replace(R.id.container, FirstFragment.newInstance(randomNumber))
+                .commit()
         }
+
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, FirstFragment.newInstance(randomNumber))
+                    .commit()
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
-    private fun generate(min: Int, max: Int): Int {
-        return if (min > max) (max..min).random() else (min..max).random()
+    private fun generateRandomNumber(min: Int, max: Int): Int {
+        return (min..max).random()
     }
 
     companion object {
