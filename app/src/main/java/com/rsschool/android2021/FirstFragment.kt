@@ -1,5 +1,6 @@
 package com.rsschool.android2021
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,15 @@ class FirstFragment : Fragment() {
     private var previousResult: TextView? = null
     private var minValue: EditText? = null
     private var maxValue: EditText? = null
+
+    private var communicator: Communicator? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is Communicator) {
+            communicator = context
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,8 +48,8 @@ class FirstFragment : Fragment() {
 
         generateButton?.setOnClickListener {
             try {
-                val min = minValue!!.text.toString()
-                val max = maxValue!!.text.toString()
+                val min = minValue?.text.toString()
+                val max = maxValue?.text.toString()
 
                 if (min.isEmpty() || max.isEmpty()) {
                     Toast.makeText(
@@ -58,10 +68,8 @@ class FirstFragment : Fragment() {
                     ).show()
                     return@setOnClickListener
                 }
+                communicator?.onFirstFragmentListener(min.toInt(), max.toInt())
 
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.container, SecondFragment.newInstance(min.toInt(), max.toInt()))
-                    .commit()
             } catch (e: NumberFormatException) {
                 Toast.makeText(
                     requireContext(),
@@ -71,6 +79,11 @@ class FirstFragment : Fragment() {
                 return@setOnClickListener
             }
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        communicator = null
     }
 
     companion object {

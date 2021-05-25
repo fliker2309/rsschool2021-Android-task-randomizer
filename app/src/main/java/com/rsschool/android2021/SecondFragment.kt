@@ -1,5 +1,6 @@
 package com.rsschool.android2021
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,15 @@ class SecondFragment : Fragment() {
 
     private var backButton: Button? = null
     private var result: TextView? = null
+
+    private var communicator: Communicator? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is Communicator) {
+            communicator = context
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,16 +44,12 @@ class SecondFragment : Fragment() {
         result?.text = randomNumber.toString()
 
         backButton?.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, FirstFragment.newInstance(randomNumber))
-                .commit()
+            communicator?.onSecondFragmentListener(randomNumber)
         }
 
         val callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.container, FirstFragment.newInstance(randomNumber))
-                    .commit()
+                communicator?.onSecondFragmentListener(randomNumber)
             }
         }
 
@@ -52,6 +58,11 @@ class SecondFragment : Fragment() {
 
     private fun generateRandomNumber(min: Int, max: Int): Int {
         return (min..max).random()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        communicator = null
     }
 
     companion object {
